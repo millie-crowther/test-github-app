@@ -1,0 +1,5 @@
+- name: Test
+  paths:
+    - test.py
+  teams:
+    - '@phijaro'

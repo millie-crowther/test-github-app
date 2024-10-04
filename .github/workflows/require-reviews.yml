@@ -1,0 +1,36 @@
+name: Required review check
+on:
+  pull_request_review:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  check:
+    name: Checking required reviews
+    runs-on: ubuntu-latest
+
+    # GitHub should provide a "pull_request_review_target", but they don't and
+    # the action will fail if run on a forked PR.
+    if: github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.REQUEST_REVIEW_GITHUB_APP_ID }}
+          private-key: ${{ secrets.REQUEST_REVIEW_GITHUB_APP_PRIVATE_KEY }}
+      - uses: Automattic/action-required-review@v3
+        with:
+          requirements-file: .github/CRITICAL_CODEOWNERS.yml
+          status: Required reviews
+
+          # Fail the status checks instead of leaving them pending.
+          fail: true
+
+          # GitHub Access Token. The user associated with this token will show up
+          # as the "creator" of the status check, and must have access to read
+          # pull request data, create status checks (`repo:status`), and to read
+          # your organization's teams (`read:org`).
+          token: "${{ steps.generate-token.outputs.token }}"
