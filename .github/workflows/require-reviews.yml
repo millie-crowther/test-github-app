@@ -21,8 +21,6 @@ jobs:
         with:
           app-id: ${{ vars.REQUEST_REVIEW_GITHUB_APP_ID }}
           private-key: ${{ secrets.REQUEST_REVIEW_GITHUB_APP_PRIVATE_KEY }}
-      - name: token
-        run: echo "${{ steps.generate-token.outputs.token }}}"
       - uses: Automattic/action-required-review@v3
         with:
           requirements-file: .github/CRITICAL_CODEOWNERS.yml
@@ -35,4 +33,4 @@ jobs:
           # as the "creator" of the status check, and must have access to read
           # pull request data, create status checks (`repo:status`), and to read
           # your organization's teams (`read:org`).
-          token: "${{ steps.generate-token.outputs.token }}}"
+          token: "${{ steps.generate-token.outputs.token }}"
